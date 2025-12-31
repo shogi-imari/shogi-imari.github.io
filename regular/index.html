@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>例会案内 - 日本将棋連盟 伊万里支部</title>
+    <title>例会 - 日本将棋連盟 伊万里支部</title>
     <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -13,51 +13,19 @@
 <div class="container">
     <section>
         <h2>例会案内</h2>
-        <p>伊万里支部では、月に〇回、会員同士の対局や検討を行う例会を開催しています。初心者の方も大歓迎です。</p>
+        <p>伊万里支部では月に1回、支部会員が集まり対局を行っています。<br>一般の方の参加も大歓迎です。</p>
         
-        <table class="info-table">
-            <tr>
-                <th>日時</th>
-                <td>毎月 第〇・第〇 日曜日<br>13:00 〜 17:00</td>
-            </tr>
-            <tr>
-                <th>場所</th>
-                <td>
-                    〇〇公民館 2F 会議室
-                    <details class="map-accordion">
-                        <summary>地図を表示</summary>
-                        <div class="map-frame">
-                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3335.893186792806!2d129.89123047626745!3d33.26928855866527!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x356a8544d9556ab3%3A0xdf91c52d55f0ebdb!2z5YWs5paH5byP5LiK5LyK5LiH6YeM5pWZ5a6k!5e0!3m2!1sja!2sjp!4v1767169410829!5m2!1sja!2sjp" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                    </details>
-                </td>
-            </tr>
-            <tr>
-                <th>会費</th>
-                <td>一般：〇〇円 / 学生：〇〇円<br>（席料込み）</td>
-            </tr>
-        </table>
+        <div id="reikai-info-container"></div>
     </section>
 
     <section>
-        <h2>過去の例会結果</h2>
-        <p>クリックすると各年の月別リストが表示されます。</p>
-        
-        <div class="archive-container">
-            <details class="archive-year" open>
-                <summary>2025年</summary>
-                <ul>
-                    <li><a href="viewer.html?date=202512">12月例会結果</a></li>
-                    <li><a href="viewer.html?date=202511">11月例会結果</a></li>
-                    <li><a href="viewer.html?date=202510">10月例会結果</a></li>
-                </ul>
-            </details>
-
+        <h2>結果</h2>
+        <p>クリックすると各回の結果が表示されます。</p>
+        <div id="archive-container" class="archive-container">
             <details class="archive-year">
-                <summary>2024年</summary>
+                <summary>2026年</summary>
                 <ul>
-                    <li><a href="viewer.html?date=202412">12月例会結果</a></li>
-                    <li><a href="viewer.html?date=202411">11月例会結果</a></li>
-                    <li><a href="viewer.html?date=202410">10月例会結果</a></li>
+                    <li><a href="viewer.html?date=202601">1月</a></li>
                 </ul>
             </details>
         </div>
@@ -66,22 +34,14 @@
 
 <footer id="common-footer"></footer>
 
-<script>
-    function loadComponent(id, file) {
-        fetch(file)
-            .then(response => {
-                if (!response.ok) throw new Error(file + 'が見つかりません');
-                return response.text();
-            })
-            .then(data => {
-                document.getElementById(id).innerHTML = data;
-            })
-            .catch(error => console.error(error));
-    }
+<script src="/js/common.js"></script>
+<script src="/js/info-manager.js"></script>
 
+<script>
+    // 既存のloadComponentはcommon.jsに含まれるため削除
+    // loadReikaiInfoの代わりにInfoManagerを使用
     document.addEventListener('DOMContentLoaded', () => {
-        loadComponent('common-header', '/header.html');
-        loadComponent('common-footer', '/footer.html');
+        InfoManager.loadAndRender('info.json', 'reikai-info-container');
     });
 </script>
 

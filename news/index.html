@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>お知らせ一覧 - 日本将棋連盟 伊万里支部</title>
+    <title>お知らせ - 日本将棋連盟 伊万里支部</title>
     <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -12,7 +12,7 @@
 
 <div class="container">
     <section>
-        <h2>お知らせ一覧</h2>
+        <h2>お知らせ</h2>
         <ul id="news-container" class="news-page-list"></ul>
         <div id="pagination" class="pagination"></div>
     </section>
@@ -20,47 +20,43 @@
 
 <footer id="common-footer"></footer>
 
+<script src="/js/common.js"></script>
 <script src="/js/news-manager.js"></script>
 
 <script>
-    let allNews = [];
+    let allNewsData = [];
     const itemsPerPage = 20;
 
-    async function initPage() {
-        // 1. パーツ読み込み
-        loadComponent('common-header', '/header.html');
-        loadComponent('common-footer', '/footer.html');
-
-        // 2. データ取得と初期描画
-        const response = await fetch('/news/news.json');
-        allNews = await response.json();
-        showPage(1);
-    }
-
-    function showPage(page) {
+    async function showPage(page) {
+        // 1. ニュースリストの描画
         const start = (page - 1) * itemsPerPage;
         const end = start + itemsPerPage;
+        NewsManager.render(allNewsData, 'news-container', start, end);
         
-        // 共通関数でリスト描画
-        renderNewsRange(allNews, 'news-container', start, end);
+        // 2. ページネーションの描画（クリック時にshowPageを再実行）
+        NewsManager.renderPagination('pagination', allNewsData.length, itemsPerPage, page, 'showPage');
         
-        // 共通関数でページネーション描画
-        renderPagination('pagination', allNews.length, itemsPerPage, page, (clickedPage) => {
-            showPage(clickedPage);
-            window.scrollTo(0, 0);
-        });
+        window.scrollTo(0, 0);
     }
 
-    // 画面サイズ変更時にも再描画（省略記号の調整用）
-    window.addEventListener('resize', () => {
-        const activeBtn = document.querySelector('.pagination button.active');
-        if (activeBtn) {
-            const currentPage = parseInt(activeBtn.innerText);
-            showPage(currentPage);
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            // データの取得
+            allNewsData = await NewsManager.fetchAll();
+            // 1ページ目を表示
+            showPage(1);
+        } catch (error) {
+            console.error("ニュースの読み込みに失敗しました:", error);
         }
     });
 
-    document.addEventListener('DOMContentLoaded', initPage);
+    // 画面サイズ変更時の再調整
+    window.addEventListener('resize', () => {
+        const activeBtn = document.querySelector('.pagination button.active');
+        if (activeBtn) {
+            showPage(parseInt(activeBtn.innerText));
+        }
+    });
 </script>
 </body>
 </html>

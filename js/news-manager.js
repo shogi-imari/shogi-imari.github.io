@@ -1,92 +1,61 @@
 /**
- * ニュースを表示する共通関数
+ * ニュース管理オブジェクト
  */
-async function loadNewsData(containerId, start, end) {
-    try {
+const NewsManager = {
+    // データ取得
+    async fetchAll() {
         const response = await fetch('/news/news.json');
         if (!response.ok) throw new Error('JSON読み込み失敗');
-        const allNews = await response.json();
-        renderNewsRange(allNews, containerId, start, end);
-        return allNews;
-    } catch (error) {
-        console.error('ニュースエラー:', error);
-    }
-}
+        return await response.json();
+    },
 
-/**
- * ニュース範囲描画の実体
- */
-function renderNewsRange(allNews, containerId, start, end) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // ニュース一覧の表示
+    render(allNews, containerId, start, end) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
 
-    const oneMonthAgo = new Date(today);
-    oneMonthAgo.setMonth(today.getMonth() - 1);
-
-    const targetNews = allNews.slice(start, end);
-    container.innerHTML = '';
-
-    targetNews.forEach(item => {
-        const li = document.createElement('li');
-        li.className = 'news-item';
+        const today = new Date();
+        const oneMonthAgo = new Date(today.setMonth(today.getMonth() - 1));
         
-        // 「.」を「/」に置換してDateオブジェクトが認識できるようにする
-        const normalizedDate = item.date.replace(/\./g, '/');
-        const itemDate = new Date(normalizedDate);
-        itemDate.setHours(0, 0, 0, 0);
+        const targetNews = (start !== undefined && end !== undefined) 
+                           ? allNews.slice(start, end) 
+                           : allNews;
 
-        // 判定
-        const newBadge = (itemDate >= oneMonthAgo) 
-                         ? '<span class="new-badge">New</span>' 
-                         : '';
+        container.innerHTML = targetNews.map(item => {
+            const itemDate = new Date(item.date.replace(/\./g, '/'));
+            const isNew = itemDate >= oneMonthAgo;
+            const newBadge = isNew ? '<span class="new-badge">New</span>' : '';
 
-        li.innerHTML = `
-            <span class="news-date">${item.date}</span>
-            <span class="news-cat cat-${item.category}">${item.category}</span>
-            <a href="${item.url}">${item.title}</a>
-            ${newBadge}
-        `;
-        container.appendChild(li);
-    });
-}
+            return `
+                <li class="news-item">
+                    <span class="news-date">${item.date}</span>
+                    <span class="news-cat cat-${item.category}">${item.category}</span>
+                    <a href="${item.url}">${item.title}</a>
+                    ${newBadge}
+                </li>
+            `;
+        }).join('');
+    },
 
-/**
- * ページネーション描画関数
- */
-function renderPagination(navId, totalItems, itemsPerPage, currentPage, onPageClick) {
-    const nav = document.getElementById(navId);
-    if (!nav) return;
-    nav.innerHTML = '';
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
-    if (totalPages <= 1) return;
+    // ページネーション表示
+    renderPagination(navId, totalItems, itemsPerPage, currentPage, onPageClick) {
+        const nav = document.getElementById(navId);
+        if (!nav) return;
+        
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        if (totalPages <= 1) { nav.innerHTML = ''; return; }
 
-    const isMobile = window.innerWidth < 600;
-    const range = isMobile ? 1 : 2;
+        let html = '';
+        const range = window.innerWidth < 600 ? 1 : 2;
 
-    for (let i = 1; i <= totalPages; i++) {
-        if (i === 1 || i === totalPages || (i >= currentPage - range && i <= currentPage + range)) {
-            const btn = document.createElement('button');
-            btn.innerText = i;
-            if (i === currentPage) btn.className = 'active';
-            btn.onclick = () => onPageClick(i);
-            nav.appendChild(btn);
-        } else if (i === currentPage - range - 1 || i === currentPage + range + 1) {
-            const span = document.createElement('span');
-            span.innerText = '...';
-            span.style.padding = '8px';
-            nav.appendChild(span);
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || (i >= currentPage - range && i <= currentPage + range)) {
+                const activeClass = i === currentPage ? 'class="active"' : '';
+                html += `<button ${activeClass} onclick="location.href='#'; ${onPageClick}(${i})">${i}</button>`;
+            } else if (i === currentPage - range - 1 || i === currentPage + range + 1) {
+                html += `<span style="padding:8px">...</span>`;
+            }
         }
+        nav.innerHTML = html;
     }
-}
-
-/**
- * 共通コンポーネント読み込み関数
- */
-function loadComponent(id, file) {
-    fetch(file)
-        .then(res => { if (res.ok) return res.text(); })
-        .then(data => { if (data) document.getElementById(id).innerHTML = data; });
-}
+};

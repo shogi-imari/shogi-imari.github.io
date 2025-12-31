@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大会案内 - 日本将棋連盟 伊万里支部</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<header id="common-header"></header>
+
+<div class="container">
+    <section>
+        <h2>大会案内</h2>
+        <p>伊万里支部では、年間を通じて様々な将棋大会を開催・運営しています。<br>
+            初心者から高段者まで、どなたでも参加いただけるオープンな大会もございます。</p>
+    </section>
+
+    <section id="upcoming-events">
+        <h2>現在募集中の大会</h2>
+        <div id="event-info-container">
+            <p>現在、募集中の大会はありません</p>
+        </div>
+    </section>
+
+    <section>
+        <h2>年間主要大会スケジュール</h2>
+        <p>例年の開催目安です。詳細は決定次第、お知らせにて告知いたします。</p>
+        <ul class="standard-list">
+            <li><strong>陶器市大会</strong>（5月）</li>
+            <li><strong>和多屋祭り</strong>（8月）</li>
+            <li><strong>有田町文化祭</strong>（11月）</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>結果</h2>
+        <p>クリックすると過去の結果が表示されます。</p>
+        <div id="archive-container" class="archive-container">
+            <details class="archive-year">
+                <summary>2026年</summary>
+                <ul>
+                    <li>更新予定</li>
+                </ul>
+            </details>
+        </div>
+    </section>
+</div>
+
+<footer id="common-footer"></footer>
+
+<script src="/js/common.js"></script>
+<script src="/js/info-manager.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // 自フォルダ内の info.json を読み込み、案内を表示
+        // データがある場合は #event-info-container の中身が上書きされます
+        InfoManager.loadAndRender('info.json', 'event-info-container');
+    });
+</script>
+
+</body>
+</html>

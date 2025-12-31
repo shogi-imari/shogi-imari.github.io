@@ -34,13 +34,11 @@
             min-width: 150px;
             font-weight: bold;
         }
-        /* 対局結果・勝敗・順位（中央揃え） */
         .league-table td {
             text-align: center;
             width: 45px;
             height: 45px;
         }
-        /* 勝敗と順位の列に背景色をつけて区別 */
         .col-score, .col-rank {
             background-color: #fdfdfd;
             font-weight: bold;
@@ -48,6 +46,10 @@
         }
         .cell-self {
             background-color: #ddd;
+        }
+        .table-scroll {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
     </style>
 </head>
@@ -60,110 +62,117 @@
         <h2 id="eventTitle">読み込み中...</h2>
         
         <table class="info-table">
-            <tr><th>日付</th><td id="eventDate">-</td></tr>
-            <tr><th>場所</th><td id="eventLocation">-</td></tr>
-            <tr><th>ルール</th><td id="eventRule">-</td></tr>
+            <tbody id="info-table-body">
+                <tr><th>日付</th><td id="eventDate">-</td></tr>
+                <tr><th>場所</th><td id="eventLocation">-</td></tr>
+            </tbody>
         </table>
 
-        <h3>対局結果（総当たり表）</h3>
+        <h3>結果</h3>
         <div class="table-scroll" id="tableContainer"></div>
 
-        <h3>備考</h3>
+        <h3>コメント</h3>
         <div id="eventComment" style="white-space: pre-wrap; background: #f9f9f9; padding: 15px; border-radius: 4px; min-height: 50px;"></div>
     </section>
     
-    <p><a href="./index.html">&laquo; 例会案内へ戻る</a></p>
+    <p><a href="./index.html">« 例会案内へ戻る</a></p>
 </div>
 
 <footer id="common-footer"></footer>
 
+<script src="/js/common.js"></script>
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const dateParam = urlParams.get('date');
 
-    if (!dateParam || dateParam.length !== 6) {
-        document.getElementById('eventTitle').textContent = "エラー：日付が正しく指定されていません";
-    } else {
-        const year = dateParam.substring(0, 4);
-        const month = dateParam.substring(4, 6);
-        const jsonPath = `./result/${year}/${month}.json`;
+    function getJsonPath(param) {
+        if (!param || param.length !== 6) return 'info.json';
+        const year = param.substring(0, 4);
+        const monthNum = parseInt(param.substring(4, 6), 10);
+        return `result/${year}/${monthNum}.json`;
+    }
 
-        fetch(jsonPath)
-            .then(response => {
-                if (!response.ok) throw new Error('ファイルが見つかりません');
-                return response.json();
-            })
-            .then(data => {
-                document.getElementById('eventTitle').textContent = `${year}年${month}月 例会結果`;
-                document.getElementById('eventDate').textContent = data.info.date;
-                document.getElementById('eventLocation').textContent = data.info.location;
-                document.getElementById('eventRule').textContent = data.info.rule;
-                document.getElementById('eventComment').textContent = data.info.comment;
+    const jsonPath = getJsonPath(dateParam);
 
-                const participants = data.participants;
-                const results = data.results;
-                const pCount = participants.length;
-                
-                // ヘッダー（選手名 + 相手番号 + 勝敗 + 順位）
-                let tableHtml = '<table class="league-table"><thead><tr><th colspan="2">選手名</th>';
-                participants.forEach((_, index) => {
-                    tableHtml += `<th>${index + 1}</th>`;
+    fetch(jsonPath)
+        .then(response => {
+            if (!response.ok) throw new Error('ファイルが見つかりません');
+            return response.json();
+        })
+        .then(rawData => {
+            // 配列の1番目を取得
+            const data = Array.isArray(rawData) ? rawData[0] : rawData;
+
+            // タイトルの設定
+            if (dateParam) {
+                const y = dateParam.substring(0, 4);
+                const m = parseInt(dateParam.substring(4, 6), 10);
+                document.getElementById('eventTitle').textContent = `${y}年${m}月 例会結果`;
+            } else {
+                document.getElementById('eventTitle').textContent = "最新の例会結果";
+            }
+
+            // --- 案内情報の反映 (JSON構成変更に対応) ---
+            document.getElementById('eventDate').textContent = data.info.date;
+            document.getElementById('eventLocation').textContent = data.info.location;
+            
+            // detail内の項目（ルールや会費など）を動的に追加
+            const infoBody = document.getElementById('info-table-body');
+            if (data.info.detail) {
+                Object.entries(data.info.detail).forEach(([key, value]) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<th>${key}</th><td>${value}</td>`;
+                    infoBody.appendChild(row);
                 });
-                tableHtml += '<th>勝敗</th><th>順位</th></tr></thead><tbody>';
+            }
 
-                // 各行の作成
-                participants.forEach((p, i) => {
-                    tableHtml += `<tr>`;
-                    tableHtml += `<td class="col-num">${i + 1}</td>`;
-                    tableHtml += `<td class="col-name">${p}</td>`;
-                    
-                    // 対戦結果部分（○や×）
-                    for (let j = 0; j < pCount; j++) {
-                        if (i === j) {
-                            tableHtml += `<td class="cell-self">-</td>`;
-                        } else {
-                            const res = results[i][j] || '-';
-                            tableHtml += `<td>${res}</td>`;
-                        }
-                    }
+            // --- 結果情報の反映 (data.result へのパス変更に対応) ---
+            document.getElementById('eventComment').textContent = data.result.comment;
 
-                    // 勝敗（participantsの数だけ進んだインデックスにある）
-                    const winLoss = results[i][pCount] || '-';
-                    tableHtml += `<td class="col-score">${winLoss}</td>`;
+            const participants = data.result.participants;
+            const league = data.result.league;
+            const pCount = participants.length;
 
-                    // 順位（さらにその次にある）
-                    const rank = results[i][pCount + 1] || '-';
-                    tableHtml += `<td class="col-rank">${rank}</td>`;
-                    
-                    tableHtml += `</tr>`;
-                });
-                tableHtml += '</tbody></table>';
-
-                document.getElementById('tableContainer').innerHTML = tableHtml;
-            })
-            .catch(error => {
-                console.error(error);
-                document.getElementById('eventTitle').textContent = "データが見つかりません";
-                document.getElementById('tableContainer').innerHTML = `<p>データ読み込み失敗：${jsonPath}</p>`;
+            if (pCount === 0) {
+                document.getElementById('tableContainer').innerHTML = "<p>結果データはまだ登録されていません。</p>";
+                return;
+            }
+            
+            // 星取表の生成ロジック
+            let tableHtml = '<table class="league-table"><thead><tr><th colspan="2">選手名</th>';
+            participants.forEach((_, index) => {
+                tableHtml += `<th>${index + 1}</th>`;
             });
-    }
-    
-    function loadComponent(id, file) {
-        fetch(file)
-            .then(response => {
-                if (!response.ok) throw new Error(file + 'が見つかりません');
-                return response.text();
-            })
-            .then(data => {
-                document.getElementById(id).innerHTML = data;
-            })
-            .catch(error => console.error(error));
-    }
+            tableHtml += '<th>勝敗</th><th>順位</th></tr></thead><tbody>';
 
-    document.addEventListener('DOMContentLoaded', () => {
-        loadComponent('common-header', '/header.html');
-        loadComponent('common-footer', '/footer.html');
-    });
+            participants.forEach((p, i) => {
+                tableHtml += `<tr>`;
+                tableHtml += `<td class="col-num">${i + 1}</td>`;
+                tableHtml += `<td class="col-name">${p}</td>`;
+                
+                for (let j = 0; j < pCount; j++) {
+                    if (i === j) {
+                        tableHtml += `<td class="cell-self">-</td>`;
+                    } else {
+                        const res = league[i][j] || '-';
+                        tableHtml += `<td>${res}</td>`;
+                    }
+                }
+
+                // スコアと順位（リーグデータの最後2つ）
+                tableHtml += `<td class="col-score">${league[i][pCount] || '-'}</td>`;
+                tableHtml += `<td class="col-rank">${league[i][pCount + 1] || '-'}</td>`;
+                tableHtml += `</tr>`;
+            });
+            tableHtml += '</tbody></table>';
+
+            document.getElementById('tableContainer').innerHTML = tableHtml;
+        })
+        .catch(error => {
+            console.error(error);
+            document.getElementById('eventTitle').textContent = "データなし";
+            document.getElementById('tableContainer').innerHTML = `<p>指定されたデータが見つかりませんでした</p>`;
+        });
 </script>
 
 </body>
