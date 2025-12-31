@@ -2,10 +2,52 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>日本将棋連盟 伊万里支部</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>日本将棋連盟 伊万里支部へようこそ</h1>
-    <p>現在、ホームページを作成中です。</p>
+
+<header id="common-header"></header>
+
+<div class="container">
+    <section class="main-visual">
+        <div class="photo-frame">
+            <p>【ここに将棋を指している写真を表示】</p>
+        </div>
+    </section>
+
+    <section id="top-intro">
+        <h2>伊万里支部について</h2>
+        <p>日本将棋連盟 伊万里支部は、佐賀県伊万里市を中心に活動する将棋団体です。<br>
+        初心者から有段者まで、幅広い世代が将棋を通じて交流を深めています。見学も随時受け付けております。</p>
+    </section>
+
+    <section>
+        <h2>ニュース</h2>
+        <ul id="top-news-container" class="news-list">
+            </ul>
+        <div style="margin-top: 15px;">
+            <a href="/news/index.html" class="more-link">＞ 過去のお知らせ一覧はこちら</a>
+        </div>
+    </section>
+</div>
+
+<footer id="common-footer"></footer>
+
+<script src="/js/news-manager.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. ヘッダーとフッターを読み込む（news-manager.js内の関数を使用）
+        loadComponent('common-header', '/header.html');
+        loadComponent('common-footer', '/footer.html');
+
+        // 2. ニュースを読み込む（ID名, 開始番号, 終了番号）
+        // 最新の0番目から5件目までを表示
+        loadNewsData('top-news-container', 0, 5);
+    });
+</script>
+
 </body>
 </html>

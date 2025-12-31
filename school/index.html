@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>将棋教室 - 日本将棋連盟 伊万里支部</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<header id="common-header"></header>
+
+<div class="container">
+    <section>
+        <h2>将棋教室のご案内</h2>
+        <p>伊万里支部では、子どもから大人までを対象とした将棋教室を開催しています。ルールを覚えたい初心者の方から、さらに上達を目指す方まで、棋力に合わせて指導いたします。見学も随時受け付けております。</p>
+        
+        <table class="info-table">
+            <tr>
+                <th>日時</th>
+                <td>毎月 第2・第4 土曜日<br>10:00 〜 12:00</td>
+            </tr>
+            <tr>
+                <th>場所</th>
+                <td>
+                    伊万里コミュニティセンター
+                    <details class="map-accordion">
+                        <summary>地図を表示</summary>
+                        <div class="map-frame">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3326.657572714571!2d129.87702677626966!3d33.27538355830919!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x356a7608e0854261%3A0xc6b678c2e176df66!2z5Lya6YeM44Kz44Of44Ol44OL44OG44Kj44K744Oz44K_44O8!5e0!3m2!1sja!2sjp!4v1700000000000" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
+                    </details>
+                </td>
+            </tr>
+            <tr>
+                <th>会費</th>
+                <td>無料</td>
+            </tr>
+            <tr>
+                <th>対象</th>
+                <td>初心者 〜 有段者まで（年齢不問）</td>
+            </tr>
+        </table>
+    </section>
+
+    <section>
+        <h2>教室の様子・活動内容</h2>
+        <p>対局だけでなく、大盤解説による手筋の勉強や、指導対局を行っています。</p>
+        <ul>
+            <li>詰将棋の演習</li>
+            <li>戦法別の定跡講義</li>
+            <li>自由対局・リーグ戦</li>
+        </ul>
+    </section>
+</div>
+
+<footer id="common-footer"></footer>
+
+<script>
+    function loadComponent(id, file) {
+        fetch(file)
+            .then(response => {
+                if (!response.ok) throw new Error(file + 'が見つかりません');
+                return response.text();
+            })
+            .then(data => {
+                document.getElementById(id).innerHTML = data;
+            })
+            .catch(error => console.error(error));
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadComponent('common-header', '/header.html');
+        loadComponent('common-footer', '/footer.html');
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>支部案内 - 日本将棋連盟 伊万里支部</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<header id="common-header"></header>
+
+<div class="container">
+    <section>
+        <h2>支部案内</h2>
+        <p>日本将棋連盟 伊万里支部は、将棋文化の普及と会員相互の親睦を目的として活動しています。</p>
+        
+        <h3>支部の概要</h3>
+        <table class="info-table">
+            <tr>
+                <th>支部名</th>
+                <td>日本将棋連盟 伊万里支部</td>
+            </tr>
+            <tr>
+                <th>設立</th>
+                <td>〇〇年〇月</td>
+            </tr>
+            <tr>
+                <th>支部長</th>
+                <td>〇〇 〇〇</td>
+            </tr>
+            <tr>
+                <th>会員数</th>
+                <td>約〇〇名（2025年現在）</td>
+            </tr>
+        </table>
+    </section>
+
+    <section>
+        <h2>主な活動内容</h2>
+        <ul>
+            <li>定期例会の開催（対局および検討会）</li>
+            <li>伊万里こども将棋教室の運営・指導</li>
+            <li>各種将棋大会の主催および運営協力</li>
+        </ul>
+    </section>
+</div>
+
+<footer id="common-footer"></footer>
+
+<script>
+    function loadComponent(id, file) {
+        fetch(file)
+            .then(response => {
+                if (!response.ok) throw new Error(file + 'が見つかりません');
+                return response.text();
+            })
+            .then(data => {
+                document.getElementById(id).innerHTML = data;
+            })
+            .catch(error => console.error(error));
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadComponent('common-header', '/header.html');
+        loadComponent('common-footer', '/footer.html');
+    });
+</script>
+
+</body>
+</html>

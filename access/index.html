@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アクセス - 日本将棋連盟 伊万里支部</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        /* アクセスページ専用のスタイル */
+        .access-section {
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .access-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .address-info {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        .address-info strong {
+            font-size: 1.1rem;
+            color: #333;
+            display: block;
+            margin-bottom: 2px;
+        }
+        .map-frame {
+            width: 100%;
+            background: #f0f0f0;
+            border-radius: 8px;
+            overflow: hidden;
+            line-height: 0;
+        }
+        .map-frame iframe {
+            width: 100% !important;
+            height: 350px;
+            border: 0;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<header id="common-header"></header>
+
+<div class="container">
+    <section>
+        <h2>アクセス</h2>
+        <p>伊万里支部が開催する例会、大会、および将棋教室の会場案内です。</p>
+    </section>
+
+    <section id="meeting" class="access-section">
+        <div class="address-info">
+            <strong>伊万里コミュニティセンター</strong>
+            〒848-0045 佐賀県伊万里市松島町350-4
+        </div>
+        <div class="map-frame">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3335.5571036494875!2d129.87367807626768!3d33.278085458209816!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x356a843e7f2c3b63%3A0x9a5fc2bb7330a18c!2z5LyK5LiH6YeM44Kz44Of44Ol44OL44OG44Kj44K744Oz44K_44O8!5e0!3m2!1sja!2sjp!4v1767169336402!5m2!1sja!2sjp" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+    </section>
+
+    <section id="kids" class="access-section">
+        <div class="address-info">
+            <strong>公文式上伊万里教室</strong>
+            〒848-0023 佐賀県伊万里市大坪町丙1321
+        </div>
+        <div class="map-frame">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3335.893186792806!2d129.89123047626745!3d33.26928855866527!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x356a8544d9556ab3%3A0xdf91c52d55f0ebdb!2z5YWs5paH5byP5LiK5LyK5LiH6YeM5pWZ5a6k!5e0!3m2!1sja!2sjp!4v1767169410829!5m2!1sja!2sjp" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+    </section>
+
+    <section id="event" class="access-section">
+        <div class="address-info">
+            <strong>有田町生涯学習センター</strong>
+            〒844-0018 佐賀県西松浦郡有田町本町丙1002-2
+        </div>
+        <div class="map-frame">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3339.2319740633206!2d129.87809607626463!3d33.181784463189665!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x356a9b7483c16771%3A0x5af8a828084531e0!2z5pyJ55Sw55S655Sf5rav5a2m57-S44K744Oz44K_44O8!5e0!3m2!1sja!2sjp!4v1767169427166!5m2!1sja!2sjp" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+    </section>
+
+    <section id="event2" class="access-section">
+        <div class="address-info">
+            <strong>和多屋別荘</strong>
+            〒843-0301 佐賀県嬉野市嬉野町大字下宿乙738
+        </div>
+        <div class="map-frame">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3342.408632103018!2d129.98695937626218!3d33.09833936749477!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x354027532aa96697%3A0x3b3d00a121eedb0c!2z5ZKM5aSa5bGL5Yil6I2Y!5e0!3m2!1sja!2sjp!4v1767169454293!5m2!1sja!2sjp" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+    </section>
+</div>
+
+<footer id="common-footer"></footer>
+
+<script>
+    function loadComponent(id, file) {
+        fetch(file)
+            .then(response => {
+                if (!response.ok) throw new Error(file + 'が見つかりません');
+                return response.text();
+            })
+            .then(data => {
+                document.getElementById(id).innerHTML = data;
+            })
+            .catch(error => console.error(error));
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadComponent('common-header', '/header.html');
+        loadComponent('common-footer', '/footer.html');
+    });
+</script>
+
+</body>
+</html>

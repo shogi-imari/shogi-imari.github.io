@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>お問い合わせ - 日本将棋連盟 伊万里支部</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        .form-group input, 
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        .form-group textarea {
+            height: 150px;
+            resize: vertical;
+        }
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #003366;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .submit-btn:hover {
+            background-color: #004080;
+        }
+        .contact-note {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 15px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+<header id="common-header"></header>
+
+<div class="container">
+    <section>
+        <h2>お問い合わせ</h2>
+        <p>以下のフォームに入力し「メールを作成する」ボタンを押すと、お使いのメールソフトが起動します。</p>
+        
+        <form id="contactForm" class="contact-form">
+            <div class="form-group">
+                <label for="name">お名前</label>
+                <input type="text" id="name" required placeholder="伊万里 太郎">
+            </div>
+
+            <div class="form-group">
+                <label for="subject">タイトル</label>
+                <input type="text" id="subject" required placeholder="入会希望、見学について等">
+            </div>
+
+            <div class="form-group">
+                <label for="message">内容</label>
+                <textarea id="message" required placeholder="こちらにお問い合わせ内容をご記入ください"></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">メールを作成する</button>
+            
+            <div class="contact-note">
+                ※ボタンを押すとメールアプリが起動します。内容を確認の上、そのまま送信してください。<br>
+                ※宛先：shogi.imari@gmail.com
+            </div>
+        </form>
+    </section>
+</div>
+
+<footer id="common-footer"></footer>
+
+<script>
+    // フォーム送信時の処理
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const name = document.getElementById('name').value;
+        const subject = document.getElementById('subject').value;
+        const message = document.getElementById('message').value;
+        const email = "shogi.imari@gmail.com";
+
+        // メールの本文を組み立て
+        const body = `【お名前】\n${name}\n\n【お問い合わせ内容】\n${message}`;
+
+        // mailtoリンクを作成して実行
+        // encodeURIComponentで日本語をメールソフトが読める形式に変換
+        location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    });
+
+    // コンポーネント読み込み用
+    function loadComponent(id, file) {
+        fetch(file)
+            .then(response => {
+                if (!response.ok) throw new Error(file + 'が見つかりません');
+                return response.text();
+            })
+            .then(data => {
+                document.getElementById(id).innerHTML = data;
+            })
+            .catch(error => console.error(error));
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadComponent('common-header', '/header.html');
+        loadComponent('common-footer', '/footer.html');
+    });
+</script>
+
+</body>
+</html>

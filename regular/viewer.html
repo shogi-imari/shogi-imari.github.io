@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>例会結果 - 日本将棋連盟 伊万里支部</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .league-table {
+            width: auto;
+            min-width: 600px;
+            border-collapse: collapse;
+            margin: 20px 0;
+            border: 2px solid #333;
+        }
+        .league-table th, .league-table td {
+            border: 1px solid #333;
+            padding: 8px;
+        }
+        .league-table thead th {
+            background-color: #f1f0e9;
+        }
+        .col-num {
+            text-align: right;
+            padding-right: 10px;
+            width: 40px;
+            color: #666;
+            font-size: 0.9rem;
+            background-color: #f9f9f9;
+        }
+        .col-name {
+            text-align: left;
+            padding-left: 10px;
+            min-width: 150px;
+            font-weight: bold;
+        }
+        /* 対局結果・勝敗・順位（中央揃え） */
+        .league-table td {
+            text-align: center;
+            width: 45px;
+            height: 45px;
+        }
+        /* 勝敗と順位の列に背景色をつけて区別 */
+        .col-score, .col-rank {
+            background-color: #fdfdfd;
+            font-weight: bold;
+            min-width: 60px;
+        }
+        .cell-self {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+
+<header id="common-header"></header>
+
+<div class="container">
+    <section>
+        <h2 id="eventTitle">読み込み中...</h2>
+        
+        <table class="info-table">
+            <tr><th>日付</th><td id="eventDate">-</td></tr>
+            <tr><th>場所</th><td id="eventLocation">-</td></tr>
+            <tr><th>ルール</th><td id="eventRule">-</td></tr>
+        </table>
+
+        <h3>対局結果（総当たり表）</h3>
+        <div class="table-scroll" id="tableContainer"></div>
+
+        <h3>備考</h3>
+        <div id="eventComment" style="white-space: pre-wrap; background: #f9f9f9; padding: 15px; border-radius: 4px; min-height: 50px;"></div>
+    </section>
+    
+    <p><a href="./index.html">&laquo; 例会案内へ戻る</a></p>
+</div>
+
+<footer id="common-footer"></footer>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const dateParam = urlParams.get('date');
+
+    if (!dateParam || dateParam.length !== 6) {
+        document.getElementById('eventTitle').textContent = "エラー：日付が正しく指定されていません";
+    } else {
+        const year = dateParam.substring(0, 4);
+        const month = dateParam.substring(4, 6);
+        const jsonPath = `./result/${year}/${month}.json`;
+
+        fetch(jsonPath)
+            .then(response => {
+                if (!response.ok) throw new Error('ファイルが見つかりません');
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('eventTitle').textContent = `${year}年${month}月 例会結果`;
+                document.getElementById('eventDate').textContent = data.info.date;
+                document.getElementById('eventLocation').textContent = data.info.location;
+                document.getElementById('eventRule').textContent = data.info.rule;
+                document.getElementById('eventComment').textContent = data.info.comment;
+
+                const participants = data.participants;
+                const results = data.results;
+                const pCount = participants.length;
+                
+                // ヘッダー（選手名 + 相手番号 + 勝敗 + 順位）
+                let tableHtml = '<table class="league-table"><thead><tr><th colspan="2">選手名</th>';
+                participants.forEach((_, index) => {
+                    tableHtml += `<th>${index + 1}</th>`;
+                });
+                tableHtml += '<th>勝敗</th><th>順位</th></tr></thead><tbody>';
+
+                // 各行の作成
+                participants.forEach((p, i) => {
+                    tableHtml += `<tr>`;
+                    tableHtml += `<td class="col-num">${i + 1}</td>`;
+                    tableHtml += `<td class="col-name">${p}</td>`;
+                    
+                    // 対戦結果部分（○や×）
+                    for (let j = 0; j < pCount; j++) {
+                        if (i === j) {
+                            tableHtml += `<td class="cell-self">-</td>`;
+                        } else {
+                            const res = results[i][j] || '-';
+                            tableHtml += `<td>${res}</td>`;
+                        }
+                    }
+
+                    // 勝敗（participantsの数だけ進んだインデックスにある）
+                    const winLoss = results[i][pCount] || '-';
+                    tableHtml += `<td class="col-score">${winLoss}</td>`;
+
+                    // 順位（さらにその次にある）
+                    const rank = results[i][pCount + 1] || '-';
+                    tableHtml += `<td class="col-rank">${rank}</td>`;
+                    
+                    tableHtml += `</tr>`;
+                });
+                tableHtml += '</tbody></table>';
+
+                document.getElementById('tableContainer').innerHTML = tableHtml;
+            })
+            .catch(error => {
+                console.error(error);
+                document.getElementById('eventTitle').textContent = "データが見つかりません";
+                document.getElementById('tableContainer').innerHTML = `<p>データ読み込み失敗：${jsonPath}</p>`;
+            });
+    }
+    
+    function loadComponent(id, file) {
+        fetch(file)
+            .then(response => {
+                if (!response.ok) throw new Error(file + 'が見つかりません');
+                return response.text();
+            })
+            .then(data => {
+                document.getElementById(id).innerHTML = data;
+            })
+            .catch(error => console.error(error));
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadComponent('common-header', '/header.html');
+        loadComponent('common-footer', '/footer.html');
+    });
+</script>
+
+</body>
+</html>

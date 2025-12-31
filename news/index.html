@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>お知らせ一覧 - 日本将棋連盟 伊万里支部</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<header id="common-header"></header>
+
+<div class="container">
+    <section>
+        <h2>お知らせ一覧</h2>
+        <ul id="news-container" class="news-page-list"></ul>
+        <div id="pagination" class="pagination"></div>
+    </section>
+</div>
+
+<footer id="common-footer"></footer>
+
+<script src="/js/news-manager.js"></script>
+
+<script>
+    let allNews = [];
+    const itemsPerPage = 20;
+
+    async function initPage() {
+        // 1. パーツ読み込み
+        loadComponent('common-header', '/header.html');
+        loadComponent('common-footer', '/footer.html');
+
+        // 2. データ取得と初期描画
+        const response = await fetch('/news/news.json');
+        allNews = await response.json();
+        showPage(1);
+    }
+
+    function showPage(page) {
+        const start = (page - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        
+        // 共通関数でリスト描画
+        renderNewsRange(allNews, 'news-container', start, end);
+        
+        // 共通関数でページネーション描画
+        renderPagination('pagination', allNews.length, itemsPerPage, page, (clickedPage) => {
+            showPage(clickedPage);
+            window.scrollTo(0, 0);
+        });
+    }
+
+    // 画面サイズ変更時にも再描画（省略記号の調整用）
+    window.addEventListener('resize', () => {
+        const activeBtn = document.querySelector('.pagination button.active');
+        if (activeBtn) {
+            const currentPage = parseInt(activeBtn.innerText);
+            showPage(currentPage);
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', initPage);
+</script>
+</body>
+</html>
