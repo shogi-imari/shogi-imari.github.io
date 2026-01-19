@@ -127,7 +127,7 @@
             }
 
             // --- 結果情報の反映 (data.result へのパス変更に対応) ---
-            document.getElementById('eventComment').textContent = data.result.comment;
+            document.getElementById('eventComment').innerHTML = data.result.comment;
 
             const participants = data.result.participants;
             const league = data.result.league;
