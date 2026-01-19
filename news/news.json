@@ -1,12 +1,18 @@
 [
   {
-    "date": "2026.01.01",
+    "date": "2026.1.18",
+    "category": "例会結果",
+    "title": "令和8年1月の例会結果を掲載しました。",
+    "url": "/regular/viewer.html?date=202601"
+  },
+  {
+    "date": "2026.1.1",
     "category": "例会案内",
     "title": "令和8年1月の例会案内を掲載しました。",
     "url": "/regular/index.html"
   },
   {
-    "date": "2026.01.01",
+    "date": "2026.1.1",
     "category": "お知らせ",
     "title": "ホームページを開設しました。",
     "url": "/index.html"
